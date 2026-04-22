@@ -3,6 +3,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  createdAt: Date;
 }
 
 @Injectable()
@@ -12,6 +13,19 @@ export class UserService {
       id: 1,
       name: '张三',
       email: 'zhangsan@qq.com',
+      createdAt: new Date('2023-01-01'),
+    },
+    {
+      id: 2,
+      name: '李四',
+      email: 'lisi@qq.com',
+      createdAt: new Date('2023-01-02'),
+    },
+    {
+      id: 3,
+      name: '王五',
+      email: 'wangwu@qq.com',
+      createdAt: new Date('2023-01-03'),
     },
   ];
   findAll(): User[] {
@@ -20,21 +34,22 @@ export class UserService {
   findOne(id: number): User | undefined {
     return this.users.find((user) => user.id === id);
   }
-  create(user: Omit<User, 'id'>): User {
+  create(userData: Omit<User, 'id' | 'createdAt'>): User {
     const newUser: User = {
-      id: this.users.length + 1,
-      ...user,
+      id: this.getNextId(),
+      ...userData,
+      createdAt: new Date(),
     };
     this.users.push(newUser);
     return newUser;
   }
-  update(id: number, user: Partial<Omit<User, 'id'>>): User | undefined {
-    const index = this.users.findIndex((u) => u.id === id);
-    if (index === -1) {
+  update(id: number, userData: Partial<Omit<User, 'id'>>): User | undefined {
+    const user = this.findOne(id);
+    if (!user) {
       return undefined;
     }
-    this.users[index] = { ...this.users[index], ...user };
-    return this.users[index];
+    Object.assign(user, userData);
+    return user;
   }
   remove(id: number): boolean {
     const index = this.users.findIndex((u) => u.id === id);
@@ -43,5 +58,10 @@ export class UserService {
     }
     this.users.splice(index, 1);
     return true;
+  }
+  private getNextId(): number {
+    return this.users.length > 0
+      ? Math.max(...this.users.map((u) => u.id)) + 1
+      : 1;
   }
 }
