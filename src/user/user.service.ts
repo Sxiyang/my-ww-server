@@ -66,8 +66,6 @@ export class UserService {
     return true;
   }
   private getNextId(): number {
-    return this.users.length > 0
-      ? Math.max(...this.users.map((u) => u.id)) + 1
-      : 1;
+    return this.users.length > 0 ? Math.max(...this.users.map((u) => u.id)) + 1 : 1;
   }
 }
