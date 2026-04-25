@@ -1,6 +1,12 @@
 {
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // 保存时自动修复 ESLint
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  // 推荐
+  "eslint.validate": ["javascript", "typescript"],
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
