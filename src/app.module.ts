@@ -8,10 +8,20 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './auth/jwt.strategy';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET') || 'test-secret-key',
+        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '24h' },
+      }),
+      inject: [ConfigService],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -34,6 +44,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
     },
     LoggerMiddleware,
     AppService,
+    JwtStrategy,
   ],
 })
 export class AppModule implements NestModule {

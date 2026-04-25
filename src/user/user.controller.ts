@@ -10,12 +10,34 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import type { User } from './user.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard, Roles } from '../auth/roles.guard';
+
+interface AuthUser {
+  userId: number;
+  username: string;
+  roles?: string[];
+}
+
 @Controller('user')
+@UseGuards(JwtAuthGuard)
 export class UserController {
+  @Get('info')
+  getInfo(@Request() req: { user?: AuthUser }) {
+    return req.user;
+  }
+  @Get('admin')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  getAdminInfo(@Request() req: { user?: AuthUser }) {
+    return { message: '这是管理员信息', user: req.user };
+  }
   constructor(private readonly userService: UserService) {}
   @Get()
   findAll(): User[] {
