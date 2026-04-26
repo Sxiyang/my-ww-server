@@ -10,9 +10,12 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: '.env', // 指定环境变量文件
       isGlobal: true,
     }),
     JwtModule.registerAsync({
@@ -41,6 +44,10 @@ import { JwtStrategy } from './auth/jwt.strategy';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
     LoggerMiddleware,
     AppService,

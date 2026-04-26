@@ -16,7 +16,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import type { User } from './user.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 
 interface AuthUser {
@@ -26,8 +26,12 @@ interface AuthUser {
 }
 
 @Controller('user')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard) TODO: 测试用，后续移除
 export class UserController {
+  @Get('error')
+  testError() {
+    throw new Error('测试错误');
+  }
   @Get('info')
   getInfo(@Request() req: { user?: AuthUser }) {
     return req.user;
