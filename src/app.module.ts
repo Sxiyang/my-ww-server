@@ -12,16 +12,23 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { configValidationSchema } from './config/config.schema';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env', // 指定环境变量文件
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`, // 指定环境变量文件
       isGlobal: true,
+      validationSchema: configValidationSchema,
+      validationOptions: {
+        allowUnknown: true, // 忽略未知的变量
+        abortEarly: true, // 验证失败时是否立即抛出异常
+      },
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'test-secret-key',
+        secret: configService.get<string>('JWT_SECRET'),
         signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '24h' },
       }),
       inject: [ConfigService],
