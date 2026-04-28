@@ -13,6 +13,8 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { configValidationSchema } from './config/config.schema';
+import { CommonModule } from './common/common.module';
+import { InterviewModule } from './interview/interview.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { configValidationSchema } from './config/config.schema';
       inject: [ConfigService],
     }),
     UserModule,
+    CommonModule,
+    InterviewModule,
   ],
   controllers: [AppController],
   providers: [
